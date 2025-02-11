@@ -1,7 +1,10 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
+from email.mime.text import MIMEText
 import io
+import cv2
+
 
 def send_alert(frame):
     # Configurações do e-mail

@@ -1,17 +1,27 @@
 import cv2
 import numpy as np
-from alert import send_alert  # Importa a função de alerta
+import tensorflow as tf
+from alert import send_alert  # Função de alerta para objetos perigosos
 
-# Load YOLO model
-net = cv2.dnn.readNet("models/yolov3.weights", "models/yolov3.cfg")
-classes = []
-with open("models/coco.names", "r") as f:
-    classes = [line.strip() for line in f.readlines()]
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
-colors = np.random.uniform(0, 255, size=(len(classes), 3))
+# Caminhos do modelo treinado
+MODEL_PATH = "../models/model.keras"
+CLASS_NAMES = ["faca", "objeto_cortante"]
+
+# Carregar modelo treinado
+model = tf.keras.models.load_model(MODEL_PATH)
+
+# Parâmetros de pré-processamento
+IMG_SIZE = (416, 416)
+
+def preprocess_frame(frame):
+    """Pré-processa o frame para ser compatível com o modelo."""
+    image = cv2.resize(frame, IMG_SIZE)  # Redimensiona para o tamanho esperado
+    image = np.array(image, dtype=np.float32) / 255.0  # Normaliza os pixels
+    image = np.expand_dims(image, axis=0)  # Adiciona batch dimension
+    return image
 
 def detect_objects(video_path):
+    """Detecta objetos no vídeo usando o modelo treinado no TensorFlow."""
     cap = cv2.VideoCapture(video_path)
 
     while True:
@@ -19,45 +29,30 @@ def detect_objects(video_path):
         if not ret:
             break
 
-        height, width, _ = frame.shape
-        blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-        net.setInput(blob)
-        outs = net.forward(output_layers)
+        # Processar frame
+        processed_frame = preprocess_frame(frame)
 
-        class_ids, confidences, boxes = [], [], []
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
-                if confidence > 0.5:  # Ajuste conforme necessário
-                    center_x = int(detection[0] * width)
-                    center_y = int(detection[1] * height)
-                    w = int(detection[2] * width)
-                    h = int(detection[3] * height)
-                    x = int(center_x - w / 2)
-                    y = int(center_y - h / 2)
-                    boxes.append([x, y, w, h])
-                    confidences.append(float(confidence))
-                    class_ids.append(class_id)
+        # Fazer a previsão com o modelo
+        predictions = model.predict(processed_frame)
+        predicted_class = np.argmax(predictions, axis=1)[0]
+        confidence = np.max(predictions)
 
-        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        # Se a confiança for alta, mostrar o objeto detectado
+        if confidence > 0.5:
+            label = CLASS_NAMES[predicted_class]
+            print(f"Objeto detectado: {label} (Confiança: {confidence:.2f})")
 
-        for i in range(len(boxes)):
-            if i in indexes:
-                x, y, w, h = boxes[i]
-                label = str(classes[class_ids[i]])
-                color = colors[class_ids[i]]
-                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-                cv2.putText(frame, label, (x, y - 5), cv2.FONT_HERSHEY_PLAIN, 1, color, 1)
+            # Exibir texto no frame
+            cv2.putText(frame, f"{label} ({confidence:.2f})", (20, 50),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                if label in ["knife", "scissors"]:  # Ajuste conforme necessário
-                    print("Objeto cortante detectado!")
-                    send_alert(frame)  # Chama a função de alerta
+            # Enviar alerta se for um objeto perigoso
+            if label in CLASS_NAMES:  # Ajuste conforme necessário
+                send_alert(frame)
 
-        cv2.imshow("Image", frame)
-        key = cv2.waitKey(1)
-        if key == 27:  # ESC para sair
+        # Exibir frame na tela
+        cv2.imshow("Detecção", frame)
+        if cv2.waitKey(1) == 27:  # Pressionar ESC para sair
             break
 
     cap.release()

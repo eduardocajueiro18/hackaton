@@ -82,4 +82,17 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
     ```
 
 ## Estrutura do Projeto
-
+```
+├── dataset                  # Arquivo principal para execução
+├───── test/                 # Arquivo principal para execução
+├───── train/                # Arquivo principal para execução
+├── models/                  # Arquivo principal para execução
+├── src/                     # Diretório do código-fonte
+├───── alert.py              # Arquivo principal para execução
+├───── detector.py           # Arquivo principal para execução
+├───── train.py              # Arquivo principal para execução
+├───── utils.py              # Arquivo principal para execução
+├── videos/                  # Diretório de vídeos de teste
+├── requirements.txt         # Dependências do projeto
+└── README.md                # Documentação do projeto
+```
