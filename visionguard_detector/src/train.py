@@ -46,10 +46,13 @@ def load_dataset():
 
     return dataset_train, dataset_val
 
+
 def create_model():
-    """Cria um modelo CNN otimizado para classificação de imagens."""
+    """Cria e compila o modelo de rede neural convolucional (CNN)."""
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Input(shape=(IMG_SIZE[0], IMG_SIZE[1], 3)),  # Definição correta da entrada
+        tf.keras.layers.Input(shape=(416, 416, 3)),  # Definição explícita da entrada
+
+        # Camadas convolucionais
         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
@@ -59,16 +62,15 @@ def create_model():
         tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        # **AQUI GARANTIMOS QUE OS DADOS SEJAM ACHATADOS**
+        tf.keras.layers.Flatten(),  # Transforma (416, 416, 3) em um vetor 1D
 
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 

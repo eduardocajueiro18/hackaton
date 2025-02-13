@@ -1,70 +1,84 @@
 import os
 
-# Configuração do TensorFlow para suprimir avisos desnecessários
+# Configuração do TensorFlow para evitar avisos desnecessários
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Apenas mostra erros críticos
 
 import cv2
 import numpy as np
 import tensorflow as tf
-from alert import send_alert  # Função de alerta para objetos perigosos
+from alert import send_alert  # Importa a função de alerta
 
-VIDEOS_DIR = "../videos/"
-# Caminhos do modelo treinado
-MODEL_PATH = "../models/final_modelo.keras"
-CLASS_NAMES = ["faca", "objeto_cortante"]
+# Definições do modelo
+VIDEO_DIR = "../videos/"
+MODEL_PATH = "../models/final_model.keras"  # Caminho do modelo salvo
+IMG_SIZE = (416, 416)  # Dimensão esperada das imagens
+CONFIDENCE_THRESHOLD = 0.5  # Limite de confiança para detectar objetos
 
-# Carregar modelo treinado
+# Carregar o modelo treinado
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"Erro: O modelo não foi encontrado em '{MODEL_PATH}'.")
+
 model = tf.keras.models.load_model(MODEL_PATH)
+model.summary()  # Exibir estrutura do modelo para depuração
 
-# Parâmetros de pré-processamento
-IMG_SIZE = (416, 416)
+# Classes do modelo (ajuste conforme o seu dataset)
+CLASSES = ["normal", "objeto_cortante"]  # Substitua pelos nomes corretos
+
 
 def preprocess_frame(frame):
-    """Pré-processa o frame para ser compatível com o modelo."""
-    image = cv2.resize(frame, IMG_SIZE)  # Redimensiona para o tamanho esperado
-    image = np.array(image, dtype=np.float32) / 255.0  # Normaliza os pixels
-    image = np.expand_dims(image, axis=0)  # Adiciona batch dimension
-    return image
+    """Pré-processa um frame antes de enviá-lo para o modelo."""
+    frame_resized = cv2.resize(frame, IMG_SIZE)  # Redimensiona para o tamanho correto
+    frame_normalized = frame_resized.astype("float32") / 255.0  # Normaliza para [0,1]
+    frame_expanded = np.expand_dims(frame_normalized, axis=0)  # Adiciona dimensão do batch
+    return frame_expanded
+
 
 def detect_objects(video_path):
-    """Detecta objetos no vídeo usando o modelo treinado no TensorFlow."""
+    # Carregar o modelo treinado
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(f"Erro: O vídeo não foi encontrado em '{video_path}'.")
+
     cap = cv2.VideoCapture(video_path)
 
-    while True:
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Processar frame
+        # Pré-processa o frame antes de passar para o modelo
         processed_frame = preprocess_frame(frame)
 
-        # Fazer a previsão com o modelo
+        # **Correção: Garantir que processed_frame tenha a forma correta**
+        processed_frame = processed_frame.reshape(1, -1)  # Converte (1, 416, 416, 3) para (1, 50176)
+
+        print(f"Shape da imagem antes da predição: {processed_frame.shape}")  # Para depuração
+
+        # Faz a predição
         predictions = model.predict(processed_frame)
-        predicted_class = np.argmax(predictions, axis=1)[0]
-        confidence = np.max(predictions)
 
-        # Se a confiança for alta, mostrar o objeto detectado
-        if confidence > 0.5:
-            label = CLASS_NAMES[predicted_class]
-            print(f"Objeto detectado: {label} (Confiança: {confidence:.2f})")
+        # Obtém a classe com maior probabilidade
+        class_id = np.argmax(predictions[0])
+        confidence = predictions[0][class_id]
 
-            # Exibir texto no frame
-            cv2.putText(frame, f"{label} ({confidence:.2f})", (20, 50),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        if confidence > CONFIDENCE_THRESHOLD:
+            label = CLASSES[class_id]
+            color = (0, 255, 0) if label == "normal" else (0, 0, 255)
 
-            # Enviar alerta se for um objeto perigoso
-            if label in CLASS_NAMES:  # Ajuste conforme necessário
-                send_alert(frame)
+            if label == "objeto_cortante":
+                print("🚨 Objeto cortante detectado!")
+                send_alert(frame)  # Chama a função de alerta
 
-        # Exibir frame na tela
+            cv2.putText(frame, f"{label} ({confidence:.2f})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+
         cv2.imshow("Detecção", frame)
-        if cv2.waitKey(1) == 27:  # Pressionar ESC para sair
+
+        if cv2.waitKey(1) & 0xFF == 27:
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    video_path = os.path.join(VIDEOS_DIR, "video2.mp4")  # Substitua pelo caminho do vídeo a ser analisado
-    detect_objects(video_path)
+    video_path = "video.mp4"  # Substitua pelo caminho do vídeo a ser analisado
+    detect_objects(os.path.join(VIDEO_DIR, video_path))
