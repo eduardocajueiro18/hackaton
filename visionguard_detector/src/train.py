@@ -10,7 +10,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 # Parâmetros globais
 DATASET_DIR = "../dataset/"
 MODEL_DIR = "../models/"
-IMG_SIZE = (224, 224)  # Reduzido para melhorar eficiência
+IMG_SIZE = (416, 416)  # Reduzido para melhorar eficiência
 BATCH_SIZE = 32
 NUM_CLASSES = 2
 
