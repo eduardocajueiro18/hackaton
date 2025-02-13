@@ -53,8 +53,8 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
     * Crie um arquivo `.env` na raiz do projeto.
     * Adicione as seguintes variáveis:
         ```
+        TOKEN=seu_token
         EMAIL_REMETENTE=seu_email@gmail.com
-        SENHA_REMETENTE=sua_senha
         EMAIL_DESTINATARIO=email_da_central@example.com
         ```
     **Atenção:** Use um e-mail dedicado para este projeto e considere usar senhas de aplicativo (app passwords) se o seu provedor de e-mail exigir.
@@ -83,15 +83,15 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
 
 ## Estrutura do Projeto
 ```
-├── dataset                  # Arquivo principal para execução
-├───── test/                 # Arquivo principal para execução
-├───── train/                # Arquivo principal para execução
-├── models/                  # Arquivo principal para execução
+├── dataset                  # Diretório dos Datasets
+├───── test/                 # Diretório do dataset de test
+├───── train/                # Diretório do dataset de treinamento
+├── models/                  # Diretório dos modelos treinados
 ├── src/                     # Diretório do código-fonte
-├───── alert.py              # Arquivo principal para execução
-├───── detector.py           # Arquivo principal para execução
-├───── train.py              # Arquivo principal para execução
-├───── utils.py              # Arquivo principal para execução
+├───── alert.py              # Código-fonte do envio de alertas
+├───── detector.py           # Código-fonte da detecção dos objetos cortantes
+├───── train.py              # Código-fonte do treinamento do modelo 
+├───── utils.py              # Código-fonte de utilitários
 ├── videos/                  # Diretório de vídeos de teste
 ├── requirements.txt         # Dependências do projeto
 └── README.md                # Documentação do projeto
