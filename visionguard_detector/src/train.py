@@ -46,38 +46,6 @@ def load_dataset():
 
     return dataset_train, dataset_val
 
-# def load_dataset():
-#     """Carrega e prepara o dataset com aumento de dados e normalização."""
-#     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-#         rescale=1./255,            # Normalização
-#         rotation_range=20,         # Rotação aleatória
-#         width_shift_range=0.2,     # Deslocamento horizontal
-#         height_shift_range=0.2,    # Deslocamento vertical
-#         shear_range=0.2,           # Transformação em cisalhamento
-#         zoom_range=0.2,            # Zoom aleatório
-#         horizontal_flip=True       # Espelhamento horizontal
-#     )
-#
-#     val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
-#
-#     dataset_train = train_datagen.flow_from_directory(
-#         os.path.join(DATASET_DIR, "train"),
-#         target_size=IMG_SIZE,
-#         batch_size=BATCH_SIZE,
-#         class_mode="categorical"
-#     )
-#
-#     dataset_val = val_datagen.flow_from_directory(
-#         os.path.join(DATASET_DIR, "test"),
-#         target_size=IMG_SIZE,
-#         batch_size=BATCH_SIZE,
-#         class_mode="categorical",
-#         shuffle=False
-#     )
-#
-#     print(f"Classes detectadas: {dataset_train.class_indices}")
-#     return dataset_train, dataset_val
-
 def create_model():
     """Cria um modelo CNN otimizado para classificação de imagens."""
     model = tf.keras.models.Sequential([
