@@ -11,7 +11,7 @@ from alert import send_alert  # Função de alerta para objetos perigosos
 
 VIDEOS_DIR = "../videos/"
 # Caminhos do modelo treinado
-MODEL_PATH = "../models/melhor_modelo.keras"
+MODEL_PATH = "../models/final_modelo.keras"
 CLASS_NAMES = ["faca", "objeto_cortante"]
 
 # Carregar modelo treinado
