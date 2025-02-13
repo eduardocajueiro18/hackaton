@@ -1,10 +1,17 @@
+import os
+
+# Configuração do TensorFlow para suprimir avisos desnecessários
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Apenas mostra erros críticos
+
 import cv2
 import numpy as np
 import tensorflow as tf
 from alert import send_alert  # Função de alerta para objetos perigosos
 
+VIDEOS_DIR = "../videos/"
 # Caminhos do modelo treinado
-MODEL_PATH = "../models/model.keras"
+MODEL_PATH = "../models/melhor_modelo.keras"
 CLASS_NAMES = ["faca", "objeto_cortante"]
 
 # Carregar modelo treinado
@@ -59,5 +66,5 @@ def detect_objects(video_path):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    video_path = "video_teste.mp4"  # Substitua pelo caminho do vídeo a ser analisado
+    video_path = os.path.join(VIDEOS_DIR, "video2.mp4")  # Substitua pelo caminho do vídeo a ser analisado
     detect_objects(video_path)
