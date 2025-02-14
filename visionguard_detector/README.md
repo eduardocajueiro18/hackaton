@@ -12,10 +12,6 @@ Este projeto foi desenvolvido como parte do Hackathon da FIAP, com o objetivo de
 *   **Sistema de Alertas:** Envio de e-mails com imagens dos objetos detectados para a central de segurança.
 *   **Modelo Supervisionado:** Utilização de um modelo de aprendizado supervisionado treinado com um dataset customizado.
 
-## Demonstração
-
-[Link para o vídeo de demonstração no YouTube/Vimeo](Substitua por aqui o link para o seu vídeo)
-
 ## Como Começar
 
 Siga estas instruções para configurar e executar o projeto no seu ambiente.
@@ -32,7 +28,7 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
 
     ```
     git clone [URL do seu repositório]
-    cd visionguard_detector
+    cd hackaton/visionguard_detector
     ```
 
 2.  Crie um ambiente virtual (recomendado):
@@ -54,8 +50,12 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
     * Adicione as seguintes variáveis:
         ```
         TOKEN=seu_token
-        EMAIL_REMETENTE=seu_email@gmail.com
-        EMAIL_DESTINATARIO=email_da_central@example.com
+        SENDER_EMAIL=seu_email@example.com
+        SENDER_NAME=Alerta de Segurança
+        RECEIVER_EMAIL=email_da_central@example.com
+        RECEIVER_NAME=Central de segurança
+        SUBJECT=Alerta: Objeto Cortante Detectado
+        BODY=Um objeto cortante foi detectado na câmera de segurança.
         ```
     **Atenção:** Use um e-mail dedicado para este projeto e considere usar senhas de aplicativo (app passwords) se o seu provedor de e-mail exigir.
 
