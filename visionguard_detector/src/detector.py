@@ -62,16 +62,11 @@ def detect_objects(video_path):
             label = CLASSES[class_id]
             color = (0, 255, 0) if label == "normal" else (0, 0, 255)
 
-            if label == "objeto_cortante":
+            if label in CLASSES:
                 print("🚨 Objeto cortante detectado!")
                 send_alert(frame)  # Chama a função de alerta
 
             cv2.putText(frame, f"{label} ({confidence:.2f})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
-
-        cv2.imshow("Detecção", frame)
-
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
 
     cap.release()
     cv2.destroyAllWindows()
