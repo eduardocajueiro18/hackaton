@@ -23,16 +23,16 @@ model = tf.keras.models.load_model(MODEL_PATH)
 model.summary()  # Exibir estrutura do modelo para depuração
 
 # Classes do modelo (ajuste conforme o seu dataset)
-CLASSES = ["normal", "objeto_cortante"]  # Substitua pelos nomes corretos
-
+CLASSES = ["faca", "objeto_cortante"]  # Substitua pelos nomes corretos
 
 def preprocess_frame(frame):
-    """Pré-processa um frame antes de enviá-lo para o modelo."""
-    frame_resized = cv2.resize(frame, IMG_SIZE)  # Redimensiona para o tamanho correto
-    frame_normalized = frame_resized.astype("float32") / 255.0  # Normaliza para [0,1]
-    frame_expanded = np.expand_dims(frame_normalized, axis=0)  # Adiciona dimensão do batch
-    return frame_expanded
-
+    # Redimensiona a imagem para o tamanho esperado pelo modelo
+    frame = cv2.resize(frame, (416, 416))
+    # Converte para um array NumPy e normaliza para valores entre 0 e 1
+    frame = np.array(frame, dtype=np.float32) / 255.0
+    # Expande a dimensão para corresponder ao formato (1, 416, 416, 3)
+    frame = np.expand_dims(frame, axis=0)
+    return frame
 
 def detect_objects(video_path):
     # Carregar o modelo treinado
@@ -48,9 +48,6 @@ def detect_objects(video_path):
 
         # Pré-processa o frame antes de passar para o modelo
         processed_frame = preprocess_frame(frame)
-
-        # **Correção: Garantir que processed_frame tenha a forma correta**
-        processed_frame = processed_frame.reshape(1, -1)  # Converte (1, 416, 416, 3) para (1, 50176)
 
         print(f"Shape da imagem antes da predição: {processed_frame.shape}")  # Para depuração
 
