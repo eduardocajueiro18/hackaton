@@ -1,1 +1,8 @@
 Diretório para armazenamento dos modelos treinados
+Como o GitHub não permite armazenar arquivos muito grande, os arquivos de modelos gerados pelo código foram armazenados no OneDrive
+
+- best_model.keras
+https://1drv.ms/u/c/93a7751bbf49f009/EYtdMKXZX_JFhKM7t4K5XBQB9DtiM4LtggQf5fPpUS9OGw?e=hBMQdh
+
+- final_model.keras
+https://1drv.ms/u/c/93a7751bbf49f009/EfyVNx2dVP1HpZ8ev1Hbr6UBzwuls9Mi2OGN2EeSqfmmfw?e=AlhK0L
