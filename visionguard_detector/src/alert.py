@@ -2,10 +2,8 @@ import base64
 import cv2
 import mailtrap as mt
 
-# Configurações do Mailtrap API
-TOKEN = "9d8ac5a72e61f1d6ed7df20190fde559"
-
 # Configurações do e-mail
+TOKEN = "9d8ac5a72e61f1d6ed7df20190fde559"
 SENDER_EMAIL = "alert@demomailtrap.com"
 SENDER_NAME = "Alerta de Segurança"
 RECEIVER_EMAIL = "eduardocajueiro@gmail.com"

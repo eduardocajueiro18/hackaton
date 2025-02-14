@@ -69,7 +69,7 @@ Siga estas instruções para configurar e executar o projeto no seu ambiente.
 
     Substitua `caminho/para/seu/video.mp4` pelo caminho do vídeo que você deseja analisar.
 
-### Treinamento do Modelo (Opcional)
+### Treinamento do Modelo
 
 1.  **Prepare o dataset:**
     *   Organize as imagens e anotações no formato correto (YOLO, COCO, etc.)

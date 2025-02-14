@@ -10,32 +10,39 @@ import tensorflow as tf
 from alert import send_alert  # Importa a função de alerta
 
 # Definições do modelo
+# Caminho dos videos
 VIDEO_DIR = "../videos/"
-MODEL_PATH = "../models/final_model.keras"  # Caminho do modelo salvo
-IMG_SIZE = (416, 416)  # Dimensão esperada das imagens
-CONFIDENCE_THRESHOLD = 0.5  # Limite de confiança para detectar objetos
+# Caminho do modelo salvo
+MODEL_PATH = "../models/final_model.keras"
+# Dimensão esperada das imagens
+IMG_SIZE = (416, 416)
+# Limite de confiança para detectar objetos
+CONFIDENCE_THRESHOLD = 0.5
 
 # Carregar o modelo treinado
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Erro: O modelo não foi encontrado em '{MODEL_PATH}'.")
 
 model = tf.keras.models.load_model(MODEL_PATH)
-model.summary()  # Exibir estrutura do modelo para depuração
+# Exibir estrutura do modelo para depuração
+model.summary()
 
-# Classes do modelo (ajuste conforme o seu dataset)
-CLASSES = ["faca", "objeto_cortante"]  # Substitua pelos nomes corretos
+# Classes do modelo
+CLASSES = ["faca", "objeto_cortante"]
 
 def preprocess_frame(frame):
     # Redimensiona a imagem para o tamanho esperado pelo modelo
     frame = cv2.resize(frame, (416, 416))
+
     # Converte para um array NumPy e normaliza para valores entre 0 e 1
     frame = np.array(frame, dtype=np.float32) / 255.0
+
     # Expande a dimensão para corresponder ao formato (1, 416, 416, 3)
     frame = np.expand_dims(frame, axis=0)
+
     return frame
 
 def detect_objects(video_path):
-    # Carregar o modelo treinado
     if not os.path.exists(video_path):
         raise FileNotFoundError(f"Erro: O vídeo não foi encontrado em '{video_path}'.")
 
