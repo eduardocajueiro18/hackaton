@@ -39,4 +39,3 @@ def send_alert(frame):
         print("Alerta enviado com sucesso!")
     except mt.exceptions.MailtrapError as e:
         print(f"Erro ao enviar alerta: {e}")
-    exit(1)
